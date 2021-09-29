@@ -12,6 +12,8 @@ const HomeView = () => {
     joinSucceed,
     toggleIsSpeakerEnabled,
     isSpeakerEnabled,
+    isMuted,
+    toggleIsMuted,
   } = useAgora();
 
   // Request audio
@@ -27,6 +29,10 @@ const HomeView = () => {
       <Button
         title={`Speaker phone ${isSpeakerEnabled ? "on" : "off"}`}
         onPress={toggleIsSpeakerEnabled}
+      />
+      <Button
+        title={`Mute ${isMuted ? "on" : "off"}`}
+        onPress={toggleIsMuted}
       />
     </Wrapper>
   );

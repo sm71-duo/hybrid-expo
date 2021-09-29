@@ -22,8 +22,6 @@ const requestCameraAndAudioPermission = async () => {
 export const useRequestAudio = () => {
   useEffect(() => {
     if (Platform.OS === "android") {
-      // Request required permissions from Android
-
       requestCameraAndAudioPermission().then(() => {
         console.log("requested!");
       });
