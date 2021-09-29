@@ -50,6 +50,9 @@ const useAgora = () => {
         console.log("JoinChannelSuccess", channel, uid, elapsed);
 
         setJoinSucceed(true);
+        rtcEngine.current?.muteLocalAudioStream(true).then(() => {
+          setIsMuted(true);
+        });
 
         setPeerIds((peerIdsLocal) => {
           return [...peerIdsLocal, uid];
