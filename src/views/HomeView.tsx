@@ -46,21 +46,30 @@ const HomeView = () => {
       <TopWrapper>
         {joinSucceed ? renderOnDisplay() : renderOffDisplay()}
         <TopButtonsWrapper>
-          <ButtonToggle onPress={joinChannel}>
+          <ButtonToggle
+            onPress={() => {
+              console.log("up");
+            }}
+            disabled={!joinSucceed}
+          >
             <TriagleUp />
           </ButtonToggle>
           <ButtonToggle
             onPress={() => {
-              leaveChannel();
               console.log("down");
             }}
+            disabled={!joinSucceed}
           >
             <TriagleDown />
           </ButtonToggle>
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <PushToTalkButton onPress={toggleIsMuted} isActive={!isMuted}>
+        <PushToTalkButton
+          onPress={toggleIsMuted}
+          isActive={!isMuted}
+          disabled={!joinSucceed}
+        >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
       </BottomWrapper>
@@ -112,13 +121,13 @@ const TriagleDown = styled.View.attrs({
 `;
 
 const OnOffBottom = styled.Pressable`
-  background-color: #ff0000;
+  background-color: #770202;
   position: absolute;
   bottom: 0
   right: 0
   margin: 24px
-  height: 18px
-  width: 18px
+  height: 32px
+  width: 32px
   justify-content: center;
   align-items: center;
   border-radius: 9999px;
@@ -126,7 +135,7 @@ const OnOffBottom = styled.Pressable`
 
 const XButton = styled.Text`
 color: white
-font-size: 12px
+font-size: 18px
 font-weight: bold`;
 
 const TopWrapper = styled.View`
