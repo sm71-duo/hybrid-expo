@@ -164,14 +164,6 @@ const PushToTalkButton = styled.Pressable.attrs({
   margin-top: -45px;
 `;
 
-const BigCircle = styled.View`
-  margin-top: 16px;
-  border-radius: 9999px;
-  width: 200px;
-  height: 200px;
-  background-color: #4e4e4e;
-`;
-
 const TalkText = styled.Text`
   color: white;
 `;
