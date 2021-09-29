@@ -30,11 +30,7 @@ const HomeView = () => {
           </UserInfo>
         </Display>
         <TopButtonsWrapper>
-          <ButtonUp
-            onPress={() => {
-              console.log("up");
-            }}
-          ></ButtonUp>
+          <ButtonUp onPress={joinChannel}></ButtonUp>
           <ButtonDown
             onPress={() => {
               console.log("down");
@@ -43,7 +39,7 @@ const HomeView = () => {
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <PushToTalkButton>
+        <PushToTalkButton onPress={toggleIsMuted} isActive={isMuted}>
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
         <BigCircle></BigCircle>
@@ -76,7 +72,8 @@ const PushToTalkButton = styled.Pressable.attrs({
   border-radius: 9999px;
   width: 75px;
   height: 75px;
-  background-color: #4e4e4e;
+  background-color: ${(props: { isActive: boolean }) =>
+    props.isActive ? "#ff0000" : "#4e4e4e"};
   justify-content: center;
   align-items: center;
   margin-top: -45px;
