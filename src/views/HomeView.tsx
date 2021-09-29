@@ -119,25 +119,69 @@ const HomeView = () => {
 
   return (
     <Wrapper>
-      <Text>Eyoo</Text>
-      <Button
-        title={`${joinSucceed ? "Leave" : "Join"} channel`}
-        onPress={joinSucceed ? leaveChannel : joinChannel}
-      />
-      <Button
-        title={`Microphone ${openMicrophone ? "on" : "off"}`}
-        onPress={switchMicrophone}
-      />
-      <Button title="test" onPress={requestCameraAndAudioPermission} />
+      <TopWrapper>
+        <Display></Display>
+        <TopButtonsWrapper>
+          <ButtonUp></ButtonUp>
+          <ButtonDown></ButtonDown>
+        </TopButtonsWrapper>
+      </TopWrapper>
+      <BottomWrapper>
+        <Button
+          title={`${joinSucceed ? "Leave" : "Join"} channel`}
+          onPress={joinSucceed ? leaveChannel : joinChannel}
+        />
+        <Button
+          title={`Microphone ${openMicrophone ? "on" : "off"}`}
+          onPress={switchMicrophone}
+        />
+        <Button title="test" onPress={requestCameraAndAudioPermission} />
+      </BottomWrapper>
     </Wrapper>
   );
 };
 
 const Wrapper = styled.View`
-  margin: ${spacing.s4}px;
   flex: 1;
-  justify-content: center;
-  align-items: center;
+  background-color: #6d6d6d;
+`;
+
+const TopWrapper = styled.View`
+  padding: ${spacing.s4}px;
+  background-color: #595959;
+`;
+
+const Display = styled.View`
+  margin-top: 40px;
+  height: 185px
+  border: 8px solid #4e4e4e;
+  background-color: #a2bea0;
+  border-radius: 24px
+`;
+
+const TopButtonsWrapper = styled.View`
+  margin-horizontal: 75px;
+  margin-vertical: 24px
+  justify-content: space-between;
+  flex-direction: row;
+`;
+
+const ButtonUp = styled.Pressable`
+  border-radius: 99999px
+  background-color: #4E4E4E
+  width: 60px
+  height: 60px
+`;
+
+const ButtonDown = styled.Pressable`
+border-radius: 99999px
+background-color: #4E4E4E
+width: 60px
+height: 60px`;
+
+const BottomWrapper = styled.View`
+  padding: ${spacing.s4}px;
+  flex: 1;
 `;
 
 export default HomeView;
