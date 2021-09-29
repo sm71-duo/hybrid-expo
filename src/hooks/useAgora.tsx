@@ -53,6 +53,7 @@ const useAgora = () => {
         rtcEngine.current?.muteLocalAudioStream(true).then(() => {
           setIsMuted(true);
         });
+        rtcEngine.current?.setEnableSpeakerphone(isSpeakerEnabled);
 
         setPeerIds((peerIdsLocal) => {
           return [...peerIdsLocal, uid];
