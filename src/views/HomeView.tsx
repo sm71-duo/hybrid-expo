@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Text, Button } from "react-native";
+import React from "react";
+import { Text } from "react-native";
 import styled from "styled-components/native";
 import { spacing } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
