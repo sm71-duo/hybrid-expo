@@ -27,7 +27,7 @@ const HomeView = () => {
           <Text>FM: 106.2</Text>
           <UserInfo>
             <Text>Users</Text>
-            <Text>{peerIds.length}</Text>
+            <UserAmountText>{peerIds.length}</UserAmountText>
           </UserInfo>
         </Display>
         <TopButtonsWrapper>
@@ -53,6 +53,11 @@ const HomeView = () => {
 const Wrapper = styled.View`
   flex: 1;
   background-color: #6d6d6d;
+`;
+
+const UserAmountText = styled.Text`
+  color: #009206;
+  font-size: 22px;
 `;
 
 const TopWrapper = styled.View`
