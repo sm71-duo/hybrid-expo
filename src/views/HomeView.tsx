@@ -70,8 +70,8 @@ const PushToTalkButton = styled.Pressable.attrs({
   elevation: 8,
 })`
   border-radius: 9999px;
-  width: 75;
-  height: 75;
+  width: 75px;
+  height: 75px;
   background-color: #4e4e4e;
   justify-content: center;
   align-items: center;
