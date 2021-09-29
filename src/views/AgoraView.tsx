@@ -32,7 +32,7 @@ interface Props {}
 // Define a State interface.
 interface State {
   appId: string;
-  token: string;
+  token: any;
   channelName: string;
   joinSucceed: boolean;
   openMicrophone: boolean;
@@ -50,7 +50,7 @@ class AgoraView extends Component<Props, State> {
     super(props);
     this.state = {
       appId: `6e8c688be0734ab097c496f141dbc255`,
-      token: "yourToken",
+      token: null,
       channelName: "channel-x",
       openMicrophone: true,
       enableSpeakerphone: true,
@@ -68,15 +68,12 @@ class AgoraView extends Component<Props, State> {
   componentDidMount() {
     this.init();
   }
-  // Pass in your App ID through this.state, create and initialize an RtcEngine object.
   init = async () => {
     const { appId } = this.state;
     this._engine = await RtcEngine.create(appId);
     // Enable the audio module.
     await this._engine.enableAudio();
 
-    // Listen for the UserJoined callback.
-    // This callback occurs when the remote user successfully joins the channel.
     this._engine.addListener("UserJoined", (uid, elapsed) => {
       console.log("UserJoined", uid, elapsed);
       const { peerIds } = this.state;
@@ -87,8 +84,6 @@ class AgoraView extends Component<Props, State> {
       }
     });
 
-    // Listen for the UserOffline callback.
-    // This callback occurs when the remote user leaves the channel or drops offline.
     this._engine.addListener("UserOffline", (uid, reason) => {
       console.log("UserOffline", uid, reason);
       const { peerIds } = this.state;
@@ -98,8 +93,6 @@ class AgoraView extends Component<Props, State> {
       });
     });
 
-    // Listen for the JoinChannelSuccess callback.
-    // This callback occurs when the local user successfully joins the channel.
     this._engine.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
       console.log("JoinChannelSuccess", channel, uid, elapsed);
       this.setState({
@@ -108,9 +101,6 @@ class AgoraView extends Component<Props, State> {
     });
   };
 
-  // Pass in your token and channel name through this.state.token and this.state.channelName.
-  // Set the ID of the local user, which is an integer and should be unique. If you set uid as 0,
-  // the SDK assigns a user ID for the local user and returns it in the JoinChannelSuccess callback.
   _joinChannel = async () => {
     await this._engine?.joinChannel(
       this.state.token,
@@ -118,9 +108,9 @@ class AgoraView extends Component<Props, State> {
       null,
       0
     );
+    console.log(this.state.channelName);
   };
 
-  // Turn the microphone on or off.
   _switchMicrophone = () => {
     const { openMicrophone } = this.state;
     this._engine
@@ -133,7 +123,6 @@ class AgoraView extends Component<Props, State> {
       });
   };
 
-  // Switch the audio playback device.
   _switchSpeakerphone = () => {
     const { enableSpeakerphone } = this.state;
     this._engine
