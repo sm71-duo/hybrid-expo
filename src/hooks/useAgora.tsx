@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import RtcEngine from "react-native-agora";
+import RtcEngine, { ClientRole } from "react-native-agora";
 
 const useAgora = () => {
   const [appId] = useState<string>("6e8c688be0734ab097c496f141dbc255");
@@ -62,13 +62,18 @@ const useAgora = () => {
     );
 
     rtcEngine.current?.addListener("Error", (error) => {
-      console.log("Error", error);
+      console.log("Error: ", error);
     });
   }, []);
 
   const joinChannel = useCallback(async () => {
     await rtcEngine.current?.joinChannel(token, channelName, null, 0);
   }, [channelName]);
+
+  const changeChannel = (newChannelName: string) => {
+    leaveChannel();
+    rtcEngine.current?.switchChannel(token, newChannelName);
+  };
 
   const leaveChannel = useCallback(async () => {
     await rtcEngine.current?.leaveChannel();
@@ -96,6 +101,8 @@ const useAgora = () => {
     isMuted,
     toggleIsMuted,
     peerIds,
+    setChannelName,
+    changeChannel,
   };
 };
 

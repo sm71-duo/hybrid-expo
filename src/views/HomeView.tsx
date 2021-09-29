@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Text } from "react-native";
 import styled from "styled-components/native";
 import { spacing } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
+
+const FmChannels = [
+  { id: 1, name: "channel-1", fm: "102.6" },
+  { id: 2, name: "channel-2", fm: "97.2" },
+  { id: 3, name: "channel-3", fm: "96.3" },
+];
 
 const HomeView = () => {
   const {
@@ -15,10 +21,30 @@ const HomeView = () => {
     isMuted,
     toggleIsMuted,
     peerIds,
+    setChannelName,
+    changeChannel,
   } = useAgora();
 
   // Request audio
   useRequestAudio();
+
+  const [channel, setChannel] = useState<any>(FmChannels[0]);
+
+  const channelUp = () => {
+    const channelsCount = FmChannels.length;
+    if (channel.id === channelsCount) return setChannel(FmChannels[0]);
+    setChannel(FmChannels[channel.id]);
+    console.log(channel.name);
+    changeChannel(channel.name);
+  };
+
+  const channelDown = () => {
+    const channelsCount = FmChannels.length;
+    if (channel.id === 1) return setChannel(FmChannels[channelsCount - 1]);
+    setChannel(FmChannels[channel.id - 2]);
+    console.log(channel.name);
+    changeChannel(channel.name);
+  };
 
   const toggleWalkie = () => {
     if (joinSucceed) return leaveChannel();
@@ -28,7 +54,7 @@ const HomeView = () => {
   const renderOnDisplay = () => {
     return (
       <Display>
-        <Text>FM: 106.2</Text>
+        <Text>FM: {channel.fm}</Text>
         <UserInfo>
           <Text>Users</Text>
           <UserAmountText>{peerIds.length}</UserAmountText>
@@ -49,6 +75,7 @@ const HomeView = () => {
           <ButtonToggle
             onPress={() => {
               console.log("up");
+              channelUp();
             }}
             disabled={!joinSucceed}
           >
@@ -57,6 +84,7 @@ const HomeView = () => {
           <ButtonToggle
             onPress={() => {
               console.log("down");
+              channelDown();
             }}
             disabled={!joinSucceed}
           >
