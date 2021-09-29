@@ -6,7 +6,7 @@ const useAgora = () => {
   const [token, setToken] = useState<string>("");
   const [channelName, setChannelName] = useState<string>("channel-x");
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState<boolean>(true);
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
   const [joinSucceed, setJoinSucceed] = useState<boolean>(false);
   const [peerIds, setPeerIds] = useState<number[]>([]);
   const rtcEngine = useRef<RtcEngine>();
@@ -91,6 +91,7 @@ const useAgora = () => {
     isSpeakerEnabled,
     isMuted,
     toggleIsMuted,
+    peerIds,
   };
 };
 

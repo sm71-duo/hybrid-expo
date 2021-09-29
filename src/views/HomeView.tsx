@@ -14,6 +14,7 @@ const HomeView = () => {
     isSpeakerEnabled,
     isMuted,
     toggleIsMuted,
+    peerIds,
   } = useAgora();
 
   // Request audio
@@ -26,13 +27,14 @@ const HomeView = () => {
           <Text>FM: 106.2</Text>
           <UserInfo>
             <Text>Users</Text>
-            <UserAmountText>0</UserAmountText>
+            <UserAmountText>{peerIds.length}</UserAmountText>
           </UserInfo>
         </Display>
         <TopButtonsWrapper>
           <ButtonUp onPress={joinChannel}></ButtonUp>
           <ButtonDown
             onPress={() => {
+              leaveChannel();
               console.log("down");
             }}
           ></ButtonDown>
