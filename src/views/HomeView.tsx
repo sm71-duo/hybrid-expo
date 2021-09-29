@@ -39,14 +39,10 @@ const HomeView = () => {
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <Button
-          title={`${joinSucceed ? "Leave" : "Join"} channel`}
-          onPress={joinSucceed ? leaveChannel : joinChannel}
-        />
-        <Button
-          title={`Microphone ${openMicrophone ? "on" : "off"}`}
-          onPress={switchMicrophone}
-        />
+        <PushToTalkButton>
+          <TalkText>Talk</TalkText>
+        </PushToTalkButton>
+        <BigCircle></BigCircle>
       </BottomWrapper>
     </Wrapper>
   );
@@ -60,6 +56,38 @@ const Wrapper = styled.View`
 const TopWrapper = styled.View`
   padding: ${spacing.s4}px;
   background-color: #595959;
+`;
+
+const PushToTalkButton = styled.Pressable.attrs({
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 2,
+
+  elevation: 8,
+})`
+  border-radius: 9999px;
+  width: 75;
+  height: 75;
+  background-color: #4e4e4e;
+  justify-content: center;
+  align-items: center;
+  margin-top: -45px;
+`;
+
+const BigCircle = styled.View`
+  margin-top: 16px;
+  border-radius: 9999px;
+  width: 200px;
+  height: 200px;
+  background-color: #4e4e4e;
+`;
+
+const TalkText = styled.Text`
+  color: white;
 `;
 
 const Display = styled.View.attrs({
@@ -130,6 +158,7 @@ const ButtonDown = styled.Pressable.attrs({
 const BottomWrapper = styled.View`
   padding: ${spacing.s4}px;
   flex: 1;
+  align-items: center;
 `;
 
 export default HomeView;
