@@ -120,10 +120,24 @@ const HomeView = () => {
   return (
     <Wrapper>
       <TopWrapper>
-        <Display></Display>
+        <Display>
+          <Text>FM: 106.2</Text>
+          <UserInfo>
+            <Text>Users</Text>
+            <Text>0</Text>
+          </UserInfo>
+        </Display>
         <TopButtonsWrapper>
-          <ButtonUp></ButtonUp>
-          <ButtonDown></ButtonDown>
+          <ButtonUp
+            onPress={() => {
+              console.log("up");
+            }}
+          ></ButtonUp>
+          <ButtonDown
+            onPress={() => {
+              console.log("down");
+            }}
+          ></ButtonDown>
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
@@ -153,31 +167,39 @@ const TopWrapper = styled.View`
 
 const Display = styled.View`
   margin-top: 40px;
-  height: 185px
+  padding: 16px;
+  height: 185px;
   border: 8px solid #4e4e4e;
   background-color: #a2bea0;
-  border-radius: 24px
+  border-radius: 24px;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const UserInfo = styled.View`
+  align-items: flex-end;
 `;
 
 const TopButtonsWrapper = styled.View`
   margin-horizontal: 75px;
-  margin-vertical: 24px
+  margin-vertical: 24px;
   justify-content: space-between;
   flex-direction: row;
 `;
 
 const ButtonUp = styled.Pressable`
-  border-radius: 99999px
-  background-color: #4E4E4E
-  width: 60px
-  height: 60px
+  border-radius: 99999px;
+  background-color: #4e4e4e;
+  width: 60px;
+  height: 60px;
 `;
 
 const ButtonDown = styled.Pressable`
-border-radius: 99999px
-background-color: #4E4E4E
-width: 60px
-height: 60px`;
+  border-radius: 99999px;
+  background-color: #4e4e4e;
+  width: 60px;
+  height: 60px;
+`;
 
 const BottomWrapper = styled.View`
   padding: ${spacing.s4}px;
