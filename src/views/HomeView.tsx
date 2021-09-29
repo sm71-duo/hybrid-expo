@@ -74,7 +74,7 @@ const HomeView = () => {
         </PushToTalkButton>
       </BottomWrapper>
       <OnOffBottom onPress={toggleWalkie} isActive={joinSucceed}>
-        <XButton>X</XButton>
+        <XButton>{joinSucceed ? "off" : "on"}</XButton>
       </OnOffBottom>
     </Wrapper>
   );
@@ -122,13 +122,13 @@ const TriagleDown = styled.View.attrs({
 
 const OnOffBottom = styled.Pressable`
   background-color: ${(props: { isActive: boolean }) =>
-    props.isActive ? "#770202" : "#009206"};;
+    props.isActive ? "#770202" : "#009206"};
   position: absolute;
-  bottom: 0
-  right: 0
-  margin: 24px
-  height: 32px
-  width: 32px
+  bottom: 0;
+  right: 0;
+  margin: 24px;
+  height: 48px;
+  width: 48px;
   justify-content: center;
   align-items: center;
   border-radius: 9999px;
