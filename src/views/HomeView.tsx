@@ -3,17 +3,19 @@ import { Text, Button } from "react-native";
 import styled from "styled-components/native";
 import { spacing } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
+import { useRequestAudio } from "../hooks/useRequestAudio";
 
 const HomeView = () => {
   const {
-    switchMicrophone,
-    switchSpeakerphone,
     leaveChannel,
     joinChannel,
     joinSucceed,
-    openMicrophone,
-    enableSpeakerphone,
+    toggleIsSpeakerEnabled,
+    isSpeakerEnabled,
   } = useAgora();
+
+  // Request audio
+  useRequestAudio();
 
   return (
     <Wrapper>

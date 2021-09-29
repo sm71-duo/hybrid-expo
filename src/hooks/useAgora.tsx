@@ -1,116 +1,88 @@
-import React, { useEffect, useState } from "react";
-import { PermissionsAndroid, Platform, Button } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import RtcEngine from "react-native-agora";
 
 const useAgora = () => {
-  const [appId] = useState("6e8c688be0734ab097c496f141dbc255");
-  const [token, setToken] = useState(null);
-  const [channelName, setChannelName] = useState("channel-x");
-  const [openMicrophone, setOpenMicrophone] = useState(true);
-  const [enableSpeakerphone, setEnableSpeakerphone] = useState(true);
-  const [joinSucceed, setJoinSucceed] = useState(false);
-  const [peerIds, setPeerIds] = useState<[]>([]);
-
-  let _engine: RtcEngine;
+  const [appId] = useState<string>("6e8c688be0734ab097c496f141dbc255");
+  const [token, setToken] = useState<string>("");
+  const [channelName, setChannelName] = useState<string>("channel-x");
+  const [isSpeakerEnabled, setIsSpeakerEnabled] = useState<boolean>(true);
+  const [joinSucceed, setJoinSucceed] = useState<boolean>(false);
+  const [peerIds, setPeerIds] = useState<number[]>([]);
+  const rtcEngine = useRef<RtcEngine>();
 
   useEffect(() => {
-    if (Platform.OS === "android") {
-      // Request required permissions from Android
-      requestCameraAndAudioPermission().then(() => {
-        console.log("requested!");
-      });
-    }
-    init();
+    initAgora();
     return () => {
-      _engine.destroy();
+      rtcEngine.current?.destroy();
     };
   }, []);
 
-  const requestCameraAndAudioPermission = async () => {
-    try {
-      const granted = await PermissionsAndroid.requestMultiple([
-        PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      ]);
-      if (
-        granted["android.permission.RECORD_AUDIO"] ===
-        PermissionsAndroid.RESULTS.GRANTED
-      ) {
-        console.log("You can use the mic");
-      } else {
-        console.log("Permission denied");
-      }
-    } catch (err) {
-      console.warn(err);
-    }
-  };
+  const initAgora = useCallback(async () => {
+    rtcEngine.current = await RtcEngine.create(appId);
+    await rtcEngine.current?.enableAudio();
+    await rtcEngine.current?.setEnableSpeakerphone(true);
 
-  const init = async () => {
-    _engine = await RtcEngine.create(appId);
-    await _engine.enableAudio();
-
-    _engine.addListener("UserJoined", (uid, elapsed) => {
+    rtcEngine.current?.addListener("UserJoined", (uid, elapsed) => {
       console.log("UserJoined", uid, elapsed);
-      if (peerIds.indexOf(uid) === -1) {
-        setPeerIds({ ...peerIds, uid });
-      }
+
+      setPeerIds((peerIdsLocal) => {
+        const user = peerIdsLocal.find((user) => user === uid);
+        if (!user) {
+          return [...peerIdsLocal, uid];
+        }
+
+        return peerIdsLocal;
+      });
     });
 
-    _engine.addListener("UserOffline", (uid, reason) => {
+    rtcEngine.current?.addListener("UserOffline", (uid, reason) => {
       console.log("UserOffline", uid, reason);
 
-      const oldPeerIds = peerIds;
-      oldPeerIds.filter((id) => id !== uid);
-      setPeerIds(oldPeerIds);
-    });
-
-    _engine.addListener("JoinChannelSuccess", (channel, uid, elapsed) => {
-      console.log("JoinChannelSuccess", channel, uid, elapsed);
-      setJoinSucceed(true);
-    });
-  };
-
-  const joinChannel = async () => {
-    await _engine?.joinChannel(token, channelName, null, 0).then(() => {
-      console.log(token, channelName);
-    });
-  };
-
-  const switchMicrophone = () => {
-    _engine
-      ?.enableLocalAudio(!openMicrophone)
-      .then(() => {
-        setOpenMicrophone(!openMicrophone);
-      })
-      .catch((err) => {
-        console.warn("enableLocalAudio", err);
+      setPeerIds((peerIdsLocal) => {
+        return peerIdsLocal.filter((id) => id !== uid);
       });
-  };
+    });
 
-  const switchSpeakerphone = () => {
-    _engine
-      ?.setEnableSpeakerphone(!enableSpeakerphone)
-      .then(() => {
-        setEnableSpeakerphone(!enableSpeakerphone);
-      })
-      .catch((err) => {
-        console.warn("setEnableSpeakerphone", err);
-      });
-  };
+    rtcEngine.current?.addListener(
+      "JoinChannelSuccess",
+      (channel, uid, elapsed) => {
+        console.log("JoinChannelSuccess", channel, uid, elapsed);
 
-  const leaveChannel = async () => {
-    await _engine?.leaveChannel();
+        setJoinSucceed(true);
+
+        setPeerIds((peerIdsLocal) => {
+          return [...peerIdsLocal, uid];
+        });
+      }
+    );
+
+    rtcEngine.current?.addListener("Error", (error) => {
+      console.log("Error", error);
+    });
+  }, []);
+
+  const joinChannel = useCallback(async () => {
+    await rtcEngine.current?.joinChannel(token, channelName, null, 0);
+  }, [channelName]);
+
+  const leaveChannel = useCallback(async () => {
+    await rtcEngine.current?.leaveChannel();
+
     setPeerIds([]);
     setJoinSucceed(false);
-  };
+  }, []);
+
+  const toggleIsSpeakerEnabled = useCallback(async () => {
+    await rtcEngine.current?.setEnableSpeakerphone(!isSpeakerEnabled);
+    setIsSpeakerEnabled(!isSpeakerEnabled);
+  }, [isSpeakerEnabled]);
 
   return {
     joinChannel,
-    switchMicrophone,
-    switchSpeakerphone,
     leaveChannel,
+    toggleIsSpeakerEnabled,
     joinSucceed,
-    openMicrophone,
-    enableSpeakerphone,
+    isSpeakerEnabled,
   };
 };
 
