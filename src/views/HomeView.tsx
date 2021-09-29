@@ -62,7 +62,17 @@ const TopWrapper = styled.View`
   background-color: #595959;
 `;
 
-const Display = styled.View`
+const Display = styled.View.attrs({
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 2,
+
+  elevation: 8,
+})`
   margin-top: 40px;
   padding: 16px;
   height: 185px;
@@ -84,14 +94,33 @@ const TopButtonsWrapper = styled.View`
   flex-direction: row;
 `;
 
-const ButtonUp = styled.Pressable`
+const ButtonUp = styled.Pressable.attrs({
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 2,
+
+  elevation: 8,
+})`
   border-radius: 99999px;
   background-color: #4e4e4e;
   width: 60px;
   height: 60px;
 `;
 
-const ButtonDown = styled.Pressable`
+const ButtonDown = styled.Pressable.attrs({
+  shadowColor: "#000",
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  shadowOpacity: 1,
+  shadowRadius: 2,
+  elevation: 8,
+})`
   border-radius: 99999px;
   background-color: #4e4e4e;
   width: 60px;
