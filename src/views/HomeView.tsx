@@ -41,7 +41,7 @@ const HomeView = () => {
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <PushToTalkButton onPress={toggleIsMuted} isActive={isMuted}>
+        <PushToTalkButton onPress={toggleIsMuted} isActive={!isMuted}>
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
         <BigCircle></BigCircle>
