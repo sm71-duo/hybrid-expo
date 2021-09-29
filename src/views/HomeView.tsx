@@ -25,16 +25,26 @@ const HomeView = () => {
     joinChannel();
   };
 
+  const renderOnDisplay = () => {
+    return (
+      <Display>
+        <Text>FM: 106.2</Text>
+        <UserInfo>
+          <Text>Users</Text>
+          <UserAmountText>{peerIds.length}</UserAmountText>
+        </UserInfo>
+      </Display>
+    );
+  };
+
+  const renderOffDisplay = () => {
+    return <Display style={{ opacity: 0.6 }}></Display>;
+  };
+
   return (
     <Wrapper>
       <TopWrapper>
-        <Display>
-          <Text>FM: 106.2</Text>
-          <UserInfo>
-            <Text>Users</Text>
-            <UserAmountText>{peerIds.length}</UserAmountText>
-          </UserInfo>
-        </Display>
+        {joinSucceed ? renderOnDisplay() : renderOffDisplay()}
         <TopButtonsWrapper>
           <ButtonToggle onPress={joinChannel}>
             <TriagleUp />
