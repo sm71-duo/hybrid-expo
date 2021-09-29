@@ -20,6 +20,11 @@ const HomeView = () => {
   // Request audio
   useRequestAudio();
 
+  const toggleWalkie = () => {
+    if (joinSucceed) return leaveChannel();
+    joinChannel();
+  };
+
   return (
     <Wrapper>
       <TopWrapper>
@@ -31,21 +36,27 @@ const HomeView = () => {
           </UserInfo>
         </Display>
         <TopButtonsWrapper>
-          <ButtonUp onPress={joinChannel}></ButtonUp>
-          <ButtonDown
+          <ButtonToggle onPress={joinChannel}>
+            <TriagleUp />
+          </ButtonToggle>
+          <ButtonToggle
             onPress={() => {
               leaveChannel();
               console.log("down");
             }}
-          ></ButtonDown>
+          >
+            <TriagleDown />
+          </ButtonToggle>
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
         <PushToTalkButton onPress={toggleIsMuted} isActive={!isMuted}>
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
-        <BigCircle></BigCircle>
       </BottomWrapper>
+      <OnOffBottom onPress={toggleWalkie}>
+        <XButton>X</XButton>
+      </OnOffBottom>
     </Wrapper>
   );
 };
@@ -59,6 +70,54 @@ const UserAmountText = styled.Text`
   color: #009206;
   font-size: 22px;
 `;
+
+const TriagleUp = styled.View.attrs({
+  width: 0,
+  height: 0,
+  borderLeftWidth: 12,
+  borderRightWidth: 12,
+  borderBottomWidth: 18,
+  borderStyle: "solid",
+  backgroundColor: "transparent",
+  borderLeftColor: "transparent",
+  borderRightColor: "transparent",
+  borderBottomColor: "#ffffff",
+})`
+  margin-top: -4px;
+`;
+
+const TriagleDown = styled.View.attrs({
+  width: 0,
+  height: 0,
+  borderLeftWidth: 12,
+  borderRightWidth: 12,
+  borderTopWidth: 18,
+  borderStyle: "solid",
+  backgroundColor: "transparent",
+  borderLeftColor: "transparent",
+  borderRightColor: "transparent",
+  borderTopColor: "#ffffff",
+})`
+  margin-top: 8px;
+`;
+
+const OnOffBottom = styled.Pressable`
+  background-color: #ff0000;
+  position: absolute;
+  bottom: 0
+  right: 0
+  margin: 24px
+  height: 18px
+  width: 18px
+  justify-content: center;
+  align-items: center;
+  border-radius: 9999px;
+`;
+
+const XButton = styled.Text`
+color: white
+font-size: 12px
+font-weight: bold`;
 
 const TopWrapper = styled.View`
   padding: ${spacing.s4}px;
@@ -130,7 +189,7 @@ const TopButtonsWrapper = styled.View`
   flex-direction: row;
 `;
 
-const ButtonUp = styled.Pressable.attrs({
+const ButtonToggle = styled.Pressable.attrs({
   shadowColor: "#000",
   shadowOffset: {
     width: 0,
@@ -145,6 +204,8 @@ const ButtonUp = styled.Pressable.attrs({
   background-color: #4e4e4e;
   width: 60px;
   height: 60px;
+  justify-content: center
+  align-items: center
 `;
 
 const ButtonDown = styled.Pressable.attrs({
