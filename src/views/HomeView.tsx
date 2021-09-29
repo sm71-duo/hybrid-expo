@@ -12,6 +12,8 @@ const HomeView = () => {
     joinSucceed,
     toggleIsSpeakerEnabled,
     isSpeakerEnabled,
+    isMuted,
+    toggleIsMuted,
   } = useAgora();
 
   // Request audio
