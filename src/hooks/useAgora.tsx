@@ -91,6 +91,7 @@ const useAgora = () => {
     isSpeakerEnabled,
     isMuted,
     toggleIsMuted,
+    peerIds,
   };
 };
 
