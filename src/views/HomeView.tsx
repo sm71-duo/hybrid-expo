@@ -1,7 +1,7 @@
-import React from "react";
-import { Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Text } from "react-native";
 import styled from "styled-components/native";
-import { spacing, variables } from "../styles/styling";
+import { palette, spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
 
@@ -20,8 +20,15 @@ const HomeView = () => {
   // Request audio
   useRequestAudio();
 
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (joinSucceed) return setLoading(false);
+  }, [joinSucceed]);
+
   const toggleWalkie = () => {
     if (joinSucceed) return leaveChannel();
+    setLoading(true);
     joinChannel();
   };
 
@@ -38,7 +45,19 @@ const HomeView = () => {
   };
 
   const renderOffDisplay = () => {
-    return <Display style={{ opacity: 0.6 }}></Display>;
+    return (
+      <Display style={{ opacity: 0.6 }}>
+        {loading ? renderLoading() : null}
+      </Display>
+    );
+  };
+
+  const renderLoading = () => {
+    return (
+      <LoadingView>
+        <ActivityIndicator size="large" color={palette.dark} />
+      </LoadingView>
+    );
   };
 
   return (
@@ -83,6 +102,12 @@ const HomeView = () => {
 const Wrapper = styled.View`
   flex: 1;
   background-color: #6d6d6d;
+`;
+
+const LoadingView = styled.View`
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 `;
 
 const UserAmountText = styled.Text`
