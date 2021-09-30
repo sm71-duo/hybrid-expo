@@ -1,14 +1,18 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import RtcEngine from "react-native-agora";
+import { Config } from "react-native-config";
 
 const useAgora = () => {
-  const [appId] = useState<string>("6e8c688be0734ab097c496f141dbc255");
-  const [token, setToken] = useState<string>("");
+  const [appId] = useState<string>(Config.AGORA_APP_ID);
+  const [token, setToken] = useState<string>(
+    "0065d711c9369b54983a7cd5c824ccad0adIABGz9PTCLLM8Kr1KkBQOv4rvK1OzkEct/rvYDJM3t/OcQJkFYoAAAAAEADy5cWPpsJWYQEAAQCmwlZh"
+  );
   const [channelName, setChannelName] = useState<string>("channel-x");
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState(true);
   const [joinSucceed, setJoinSucceed] = useState<boolean>(false);
   const [peerIds, setPeerIds] = useState<number[]>([]);
+  const [error, setError] = useState<boolean>(false);
   const rtcEngine = useRef<RtcEngine>();
 
   useEffect(() => {
@@ -62,7 +66,8 @@ const useAgora = () => {
     );
 
     rtcEngine.current?.addListener("Error", (error) => {
-      console.log("Error", error);
+      console.log(error);
+      setError(true);
     });
   }, []);
 
@@ -96,6 +101,8 @@ const useAgora = () => {
     isMuted,
     toggleIsMuted,
     peerIds,
+    setChannelName,
+    error,
   };
 };
 

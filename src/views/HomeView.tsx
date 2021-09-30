@@ -15,6 +15,8 @@ const HomeView = () => {
     isMuted,
     toggleIsMuted,
     peerIds,
+    setChannelName,
+    error,
   } = useAgora();
 
   // Request audio
@@ -29,6 +31,7 @@ const HomeView = () => {
   const toggleWalkie = () => {
     if (joinSucceed) return leaveChannel();
     setLoading(true);
+
     joinChannel();
   };
 
@@ -60,10 +63,22 @@ const HomeView = () => {
     );
   };
 
+  const renderErrorMessage = () => {
+    return (
+      <Display style={{ opacity: 0.6 }}>
+        <ErrorText>An error has occured..</ErrorText>
+      </Display>
+    );
+  };
+
   return (
     <Wrapper>
       <TopWrapper>
-        {joinSucceed ? renderOnDisplay() : renderOffDisplay()}
+        {joinSucceed
+          ? renderOnDisplay()
+          : error
+          ? renderErrorMessage()
+          : renderOffDisplay()}
         <TopButtonsWrapper>
           <ButtonToggle
             onPress={() => {
@@ -265,6 +280,11 @@ const BottomWrapper = styled.View`
   padding: ${spacing.s4}px;
   flex: 1;
   align-items: center;
+`;
+
+const ErrorText = styled.Text`
+  color: #4e4e4e;
+  font-size: 18px;
 `;
 
 export default HomeView;

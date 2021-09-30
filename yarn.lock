@@ -4894,6 +4894,11 @@ react-native-agora@^3.5.0:
   resolved "https://registry.yarnpkg.com/react-native-agora/-/react-native-agora-3.5.0.tgz#cac2236b5baa0e530daf6eac90a5896cf3f287ef"
   integrity sha512-SztcpYkw88Waeq4FFsE5+pn8+R/Vqsj+nuxd+RV2BBC7VuILqy8NqFQ2AK2yLqHzWPIHK70ZwbujsTJPpOi6oA==
 
+react-native-config@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.4.tgz#e0e10802d1e61ef051040c84dfd19f85a5984620"
+  integrity sha512-bu47sJHn/HrB7COAWBI8DieAhrbFLINHFE2HBCcVkDu0Y5ScrMs6vL+jhIm+pMSgxouseLhXG8h7xYYpxE38PA==
+
 react-native-eject@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/react-native-eject/-/react-native-eject-0.1.2.tgz#5824c332d092d845b1a77766c81023fa3c97bfd5"
