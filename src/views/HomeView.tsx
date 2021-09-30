@@ -48,6 +48,8 @@ const HomeView = () => {
   };
 
   const renderOffDisplay = () => {
+    if (error) return renderErrorMessage();
+
     return (
       <Display style={{ opacity: 0.6 }}>
         {loading ? renderLoading() : null}
@@ -66,7 +68,7 @@ const HomeView = () => {
   const renderErrorMessage = () => {
     return (
       <Display style={{ opacity: 0.6 }}>
-        <ErrorText>An error has occured..</ErrorText>
+        <ErrorText>An error has occured.. {error}</ErrorText>
       </Display>
     );
   };
@@ -74,11 +76,7 @@ const HomeView = () => {
   return (
     <Wrapper>
       <TopWrapper>
-        {joinSucceed
-          ? renderOnDisplay()
-          : error
-          ? renderErrorMessage()
-          : renderOffDisplay()}
+        {joinSucceed ? renderOnDisplay() : renderOffDisplay()}
         <TopButtonsWrapper>
           <ButtonToggle
             onPress={() => {
@@ -283,7 +281,7 @@ const BottomWrapper = styled.View`
 `;
 
 const ErrorText = styled.Text`
-  color: #4e4e4e;
+  color: #ff0000;
   font-size: 18px;
 `;
 

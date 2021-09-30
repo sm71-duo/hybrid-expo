@@ -4,9 +4,7 @@ import { Config } from "react-native-config";
 
 const useAgora = () => {
   const [appId] = useState<string>(Config.AGORA_APP_ID);
-  const [token, setToken] = useState<string>(
-    "0065d711c9369b54983a7cd5c824ccad0adIABGz9PTCLLM8Kr1KkBQOv4rvK1OzkEct/rvYDJM3t/OcQJkFYoAAAAAEADy5cWPpsJWYQEAAQCmwlZh"
-  );
+  const [token, setToken] = useState<string>("");
   const [channelName, setChannelName] = useState<string>("channel-x");
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState<boolean>(true);
   const [isMuted, setIsMuted] = useState(true);
