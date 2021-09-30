@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { Text } from "react-native";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Text } from "react-native";
 import styled from "styled-components/native";
-import { spacing } from "../styles/styling";
+import { palette, spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
 
 const FmChannels = [
-  { id: 1, name: "channel-1", fm: "102.6" },
-  { id: 2, name: "channel-2", fm: "97.2" },
-  { id: 3, name: "channel-3", fm: "96.3" },
+  { id: 1, name: "channel-1", fm: "100.0" },
+  { id: 2, name: "channel-2", fm: "101.0" },
+  { id: 3, name: "channel-0", fm: "99.0" },
 ];
 
 const HomeView = () => {
@@ -18,17 +18,30 @@ const HomeView = () => {
     joinSucceed,
     toggleIsSpeakerEnabled,
     isSpeakerEnabled,
-    isMuted,
-    toggleIsMuted,
+    switchRole,
+    muted,
     peerIds,
-    setChannelName,
     changeChannel,
+    error,
   } = useAgora();
-
-  // Request audio
   useRequestAudio();
 
   const [channel, setChannel] = useState<any>(FmChannels[0]);
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (joinSucceed) return setLoading(false);
+  }, [joinSucceed]);
+
+  // const channelUp = () => {
+  //   setChannel(FmChannels[1]);
+  //   changeChannel("channel-2");
+  // };
+
+  // const channelDown = () => {
+  //   setChannel(FmChannels[2]);
+  //   changeChannel("channel-0");
+  // };
 
   const channelUp = () => {
     const channelsCount = FmChannels.length;
@@ -48,6 +61,8 @@ const HomeView = () => {
 
   const toggleWalkie = () => {
     if (joinSucceed) return leaveChannel();
+    setLoading(true);
+
     joinChannel();
   };
 
@@ -64,7 +79,29 @@ const HomeView = () => {
   };
 
   const renderOffDisplay = () => {
-    return <Display style={{ opacity: 0.6 }}></Display>;
+    if (error) return renderErrorMessage();
+
+    return (
+      <Display style={{ opacity: 0.6 }}>
+        {loading ? renderLoading() : null}
+      </Display>
+    );
+  };
+
+  const renderLoading = () => {
+    return (
+      <LoadingView>
+        <ActivityIndicator size="large" color={palette.dark} />
+      </LoadingView>
+    );
+  };
+
+  const renderErrorMessage = () => {
+    return (
+      <Display style={{ opacity: 0.6 }}>
+        <ErrorText>An error has occured.. {error}</ErrorText>
+      </Display>
+    );
   };
 
   return (
@@ -94,15 +131,15 @@ const HomeView = () => {
       </TopWrapper>
       <BottomWrapper>
         <PushToTalkButton
-          onPress={toggleIsMuted}
-          isActive={!isMuted}
+          onPress={switchRole}
+          isActive={!muted}
           disabled={!joinSucceed}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
       </BottomWrapper>
-      <OnOffBottom onPress={toggleWalkie}>
-        <XButton>X</XButton>
+      <OnOffBottom onPress={toggleWalkie} isActive={joinSucceed} hitSlop={20}>
+        <XButton>{joinSucceed ? "off" : "on"}</XButton>
       </OnOffBottom>
     </Wrapper>
   );
@@ -113,6 +150,12 @@ const Wrapper = styled.View`
   background-color: #6d6d6d;
 `;
 
+const LoadingView = styled.View`
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+`;
+
 const UserAmountText = styled.Text`
   color: #009206;
   font-size: 22px;
@@ -121,8 +164,8 @@ const UserAmountText = styled.Text`
 const TriagleUp = styled.View.attrs({
   width: 0,
   height: 0,
-  borderLeftWidth: 12,
-  borderRightWidth: 12,
+  borderLeftWidth: spacing.s3,
+  borderRightWidth: spacing.s3,
   borderBottomWidth: 18,
   borderStyle: "solid",
   backgroundColor: "transparent",
@@ -130,14 +173,14 @@ const TriagleUp = styled.View.attrs({
   borderRightColor: "transparent",
   borderBottomColor: "#ffffff",
 })`
-  margin-top: -4px;
+  margin-top: -${spacing.s1}px;
 `;
 
 const TriagleDown = styled.View.attrs({
   width: 0,
   height: 0,
-  borderLeftWidth: 12,
-  borderRightWidth: 12,
+  borderLeftWidth: spacing.s3,
+  borderRightWidth: spacing.s3,
   borderTopWidth: 18,
   borderStyle: "solid",
   backgroundColor: "transparent",
@@ -145,20 +188,21 @@ const TriagleDown = styled.View.attrs({
   borderRightColor: "transparent",
   borderTopColor: "#ffffff",
 })`
-  margin-top: 8px;
+  margin-top: ${spacing.s2}px;
 `;
 
 const OnOffBottom = styled.Pressable`
-  background-color: #770202;
+  background-color: ${(props: { isActive: boolean }) =>
+    props.isActive ? "#770202" : "#009206"};
   position: absolute;
-  bottom: 0
-  right: 0
-  margin: 24px
-  height: 32px
-  width: 32px
+  bottom: 0;
+  right: 0;
+  margin: ${spacing.s6}px;
+  height: 48px;
+  width: 48px;
   justify-content: center;
   align-items: center;
-  border-radius: 9999px;
+  border-radius: ${variables.borderRadius.round}px;
 `;
 
 const XButton = styled.Text`
@@ -182,7 +226,7 @@ const PushToTalkButton = styled.Pressable.attrs({
 
   elevation: 8,
 })`
-  border-radius: 9999px;
+  border-radius: ${variables.borderRadius.round}px;
   width: 75px;
   height: 75px;
   background-color: ${(props: { isActive: boolean }) =>
@@ -208,11 +252,11 @@ const Display = styled.View.attrs({
   elevation: 8,
 })`
   margin-top: 40px;
-  padding: 16px;
+  padding: ${spacing.s4}px;
   height: 185px;
   border: 8px solid #4e4e4e;
   background-color: #a2bea0;
-  border-radius: 24px;
+  border-radius: ${spacing.s6}px;
   flex-direction: row;
   justify-content: space-between;
 `;
@@ -223,7 +267,7 @@ const UserInfo = styled.View`
 
 const TopButtonsWrapper = styled.View`
   margin-horizontal: 75px;
-  margin-vertical: 24px;
+  margin-vertical: ${spacing.s6}px;
   justify-content: space-between;
   flex-direction: row;
 `;
@@ -239,7 +283,7 @@ const ButtonToggle = styled.Pressable.attrs({
 
   elevation: 8,
 })`
-  border-radius: 99999px;
+  border-radius: ${variables.borderRadius.round}px;
   background-color: #4e4e4e;
   width: 60px;
   height: 60px;
@@ -257,7 +301,7 @@ const ButtonDown = styled.Pressable.attrs({
   shadowRadius: 2,
   elevation: 8,
 })`
-  border-radius: 99999px;
+  border-radius: ${variables.borderRadius.round}px;
   background-color: #4e4e4e;
   width: 60px;
   height: 60px;
@@ -267,6 +311,11 @@ const BottomWrapper = styled.View`
   padding: ${spacing.s4}px;
   flex: 1;
   align-items: center;
+`;
+
+const ErrorText = styled.Text`
+  color: #ff0000;
+  font-size: 18px;
 `;
 
 export default HomeView;
