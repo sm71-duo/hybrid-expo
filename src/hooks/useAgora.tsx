@@ -1,9 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import RtcEngine, {
-  ChannelProfile,
-  ClientRole,
-  UserInfo,
-} from "react-native-agora";
+import RtcEngine, { ChannelProfile, ClientRole } from "react-native-agora";
 import { Config } from "react-native-config";
 
 const useAgora = () => {
@@ -85,8 +81,8 @@ const useAgora = () => {
           return peerIdsLocal;
         });
 
-        // switch role back to audience so you can not immediately talk
-        switchRole();
+        // // switch role back to audience so you can not immediately talk
+        // switchRole();
       }
     );
 
@@ -100,7 +96,7 @@ const useAgora = () => {
     await rtcEngine.current
       ?.joinChannel(token, channelName, null, rtcUid)
       .catch((error) => console.log("joinChannel: ", error));
-  }, [channelName]);
+  }, []);
 
   const switchRole = useCallback(async () => {
     if (clientRole === ClientRole.Audience) {
@@ -116,7 +112,7 @@ const useAgora = () => {
         setClientRole(ClientRole.Audience);
       });
     }
-  }, [clientRole]);
+  }, []);
 
   const changeChannel = async (newChannelName: string) => {
     // the client needs to be of type Audience to change channels..
@@ -151,7 +147,7 @@ const useAgora = () => {
       ?.setEnableSpeakerphone(!isSpeakerEnabled)
       .catch((error) => console.log("toggleIsSpeakerEnabled: ", error));
     setIsSpeakerEnabled(!isSpeakerEnabled);
-  }, [isSpeakerEnabled]);
+  }, []);
 
   return {
     joinChannel,

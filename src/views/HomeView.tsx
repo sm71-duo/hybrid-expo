@@ -45,24 +45,30 @@ const HomeView = () => {
 
   const channelUp = () => {
     const channelsCount = FmChannels.length;
-    if (channel.id === channelsCount) return setChannel(FmChannels[0]);
+    if (channel.id === channelsCount) {
+      setChannel(FmChannels[0]);
+      changeChannel(channel.name);
+      return;
+    }
     setChannel(FmChannels[channel.id]);
-    console.log(channel.name);
     changeChannel(channel.name);
   };
 
   const channelDown = () => {
     const channelsCount = FmChannels.length;
-    if (channel.id === 1) return setChannel(FmChannels[channelsCount - 1]);
+    if (channel.id === 1) {
+      setChannel(FmChannels[channelsCount - 1]);
+      changeChannel(channel.name);
+      return;
+    }
     setChannel(FmChannels[channel.id - 2]);
-    console.log(channel.name);
     changeChannel(channel.name);
   };
 
   const toggleWalkie = () => {
     if (joinSucceed) return leaveChannel();
     setLoading(true);
-
+    console.log("here");
     joinChannel();
   };
 
