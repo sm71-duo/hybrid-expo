@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Text } from "react-native";
+import React, { useState } from "react";
 import styled from "styled-components/native";
-import { palette, spacing, variables } from "../styles/styling";
+import { spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
+import DisplayScreen from "../components/DisplayScreen";
 
 const FmChannels = [
   { id: 1, name: "channel-1", fm: "100.0" },
@@ -16,34 +16,21 @@ const HomeView = () => {
     leaveChannel,
     joinChannel,
     joinSucceed,
-    toggleIsSpeakerEnabled,
-    isSpeakerEnabled,
-    switchRole,
+    toggleMute,
     muted,
     peerIds,
     changeChannel,
     error,
+    loading,
+    setLoading,
   } = useAgora();
   useRequestAudio();
 
   const [channel, setChannel] = useState<any>(FmChannels[0]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (joinSucceed) return setLoading(false);
-  }, [joinSucceed]);
-
-  // const channelUp = () => {
-  //   setChannel(FmChannels[1]);
-  //   changeChannel("channel-2");
-  // };
-
-  // const channelDown = () => {
-  //   setChannel(FmChannels[2]);
-  //   changeChannel("channel-0");
-  // };
+  const [isTurnedOn, setIsTurnedOn] = useState<boolean>(false);
 
   const channelUp = () => {
+    setLoading(true);
     const channelsCount = FmChannels.length;
     if (channel.id === channelsCount) {
       setChannel(FmChannels[0]);
@@ -55,6 +42,7 @@ const HomeView = () => {
   };
 
   const channelDown = () => {
+    setLoading(true);
     const channelsCount = FmChannels.length;
     if (channel.id === 1) {
       setChannel(FmChannels[channelsCount - 1]);
@@ -66,54 +54,22 @@ const HomeView = () => {
   };
 
   const toggleWalkie = () => {
+    setIsTurnedOn(!isTurnedOn);
     if (joinSucceed) return leaveChannel();
     setLoading(true);
-    console.log("here");
-    joinChannel();
-  };
-
-  const renderOnDisplay = () => {
-    return (
-      <Display>
-        <Text>FM: {channel.fm}</Text>
-        <UserInfo>
-          <Text>Users</Text>
-          <UserAmountText>{peerIds.length}</UserAmountText>
-        </UserInfo>
-      </Display>
-    );
-  };
-
-  const renderOffDisplay = () => {
-    if (error) return renderErrorMessage();
-
-    return (
-      <Display style={{ opacity: 0.6 }}>
-        {loading ? renderLoading() : null}
-      </Display>
-    );
-  };
-
-  const renderLoading = () => {
-    return (
-      <LoadingView>
-        <ActivityIndicator size="large" color={palette.dark} />
-      </LoadingView>
-    );
-  };
-
-  const renderErrorMessage = () => {
-    return (
-      <Display style={{ opacity: 0.6 }}>
-        <ErrorText>An error has occured.. {error}</ErrorText>
-      </Display>
-    );
+    joinChannel("channel-x");
   };
 
   return (
     <Wrapper>
       <TopWrapper>
-        {joinSucceed ? renderOnDisplay() : renderOffDisplay()}
+        <DisplayScreen
+          connections={peerIds.length}
+          hasError={error}
+          loading={loading}
+          channelName={channel.fm}
+          turnedOn={isTurnedOn}
+        />
         <TopButtonsWrapper>
           <ButtonToggle
             onPress={() => {
@@ -137,15 +93,15 @@ const HomeView = () => {
       </TopWrapper>
       <BottomWrapper>
         <PushToTalkButton
-          onPress={switchRole}
+          onPress={toggleMute}
           isActive={!muted}
           disabled={!joinSucceed}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
       </BottomWrapper>
-      <OnOffBottom onPress={toggleWalkie} isActive={joinSucceed} hitSlop={20}>
-        <XButton>{joinSucceed ? "off" : "on"}</XButton>
+      <OnOffBottom onPress={toggleWalkie} isActive={isTurnedOn} hitSlop={20}>
+        <XButton>{isTurnedOn ? "off" : "on"}</XButton>
       </OnOffBottom>
     </Wrapper>
   );
@@ -154,17 +110,6 @@ const HomeView = () => {
 const Wrapper = styled.View`
   flex: 1;
   background-color: #6d6d6d;
-`;
-
-const LoadingView = styled.View`
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-`;
-
-const UserAmountText = styled.Text`
-  color: #009206;
-  font-size: 22px;
 `;
 
 const TriagleUp = styled.View.attrs({
@@ -246,31 +191,6 @@ const TalkText = styled.Text`
   color: white;
 `;
 
-const Display = styled.View.attrs({
-  shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 4,
-  },
-  shadowOpacity: 1,
-  shadowRadius: 2,
-
-  elevation: 8,
-})`
-  margin-top: 40px;
-  padding: ${spacing.s4}px;
-  height: 185px;
-  border: 8px solid #4e4e4e;
-  background-color: #a2bea0;
-  border-radius: ${spacing.s6}px;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-
-const UserInfo = styled.View`
-  align-items: flex-end;
-`;
-
 const TopButtonsWrapper = styled.View`
   margin-horizontal: 75px;
   margin-vertical: ${spacing.s6}px;
@@ -297,31 +217,10 @@ const ButtonToggle = styled.Pressable.attrs({
   align-items: center
 `;
 
-const ButtonDown = styled.Pressable.attrs({
-  shadowColor: "#000",
-  shadowOffset: {
-    width: 0,
-    height: 4,
-  },
-  shadowOpacity: 1,
-  shadowRadius: 2,
-  elevation: 8,
-})`
-  border-radius: ${variables.borderRadius.round}px;
-  background-color: #4e4e4e;
-  width: 60px;
-  height: 60px;
-`;
-
 const BottomWrapper = styled.View`
   padding: ${spacing.s4}px;
   flex: 1;
   align-items: center;
-`;
-
-const ErrorText = styled.Text`
-  color: #ff0000;
-  font-size: 18px;
 `;
 
 export default HomeView;

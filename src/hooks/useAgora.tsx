@@ -5,19 +5,15 @@ import { Config } from "react-native-config";
 const useAgora = () => {
   const [appId] = useState<string>(Config.AGORA_APP_ID);
   const [token, setToken] = useState<string>();
-  const [channelName, setChannelName] = useState<string>("channel-x");
   const [rtcUid, setRtcUid] = useState<number>(
     parseInt((new Date().getTime() + "").slice(4, 13), 10)
-  );
-  // stupid workaround because Audience members don’t trigger the userJoined/userOffline event
-  const [clientRole, setClientRole] = useState<ClientRole>(
-    ClientRole.Broadcaster
   );
   const [muted, setMuted] = useState<boolean>(true);
   const [isSpeakerEnabled, setIsSpeakerEnabled] = useState<boolean>(true);
   const [joinSucceed, setJoinSucceed] = useState<boolean>(false);
   const [peerIds, setPeerIds] = useState<number[]>([]);
   const [error, setError] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const rtcEngine = useRef<RtcEngine>();
 
   useEffect(() => {
@@ -31,7 +27,7 @@ const useAgora = () => {
     rtcEngine.current = await RtcEngine.create(appId);
     await rtcEngine.current?.enableAudio();
     // Needs to be set to LiveBroadcasting to enable Broadcast/Audience roles
-    await rtcEngine.current?.setChannelProfile(ChannelProfile.LiveBroadcasting);
+    await rtcEngine.current?.setChannelProfile(ChannelProfile.Communication);
 
     // Fires when a remote user joins
     rtcEngine.current?.addListener("UserJoined", (uid) => {
@@ -60,17 +56,14 @@ const useAgora = () => {
       (channel, uid, elapsed) => {
         console.log("JoinChannelSuccess", channel, uid, elapsed);
 
-        // enables speakerphone and sets clientrole to audience to automatically mute new users
+        // enables speakerphone and automatically mute when joining room
         rtcEngine.current
           ?.setEnableSpeakerphone(isSpeakerEnabled)
           .catch((error) => {
             console.log("setEnableSpeakerphone", error);
           });
-        rtcEngine.current?.setClientRole(clientRole).catch((error) => {
-          console.log("setClientRole: ", error);
-        });
+        rtcEngine.current?.muteLocalAudioStream(true);
 
-        setJoinSucceed(true);
         setRtcUid(uid);
         setPeerIds((peerIdsLocal) => {
           const user = peerIdsLocal.find((user) => user === uid);
@@ -81,8 +74,8 @@ const useAgora = () => {
           return peerIdsLocal;
         });
 
-        // // switch role back to audience so you can not immediately talk
-        // switchRole();
+        setJoinSucceed(true);
+        setLoading(false);
       }
     );
 
@@ -92,62 +85,52 @@ const useAgora = () => {
     });
   }, []);
 
-  const joinChannel = useCallback(async () => {
-    await rtcEngine.current
-      ?.joinChannel(token, channelName, null, rtcUid)
-      .catch((error) => console.log("joinChannel: ", error));
-  }, []);
-
-  const switchRole = useCallback(async () => {
-    if (clientRole === ClientRole.Audience) {
-      await rtcEngine.current
-        ?.setClientRole(ClientRole.Broadcaster)
-        .then(() => {
-          setMuted(false);
-          setClientRole(ClientRole.Broadcaster);
-        });
-    } else {
-      await rtcEngine.current?.setClientRole(ClientRole.Audience).then(() => {
-        setMuted(true);
-        setClientRole(ClientRole.Audience);
-      });
+  // METHODS
+  const joinChannel = async (channelName: string) => {
+    try {
+      await rtcEngine.current?.joinChannel(token, channelName, null, rtcUid);
+    } catch (error) {
+      setError(true);
+      console.log("joinChannel: ", error);
     }
-  }, []);
-
-  const changeChannel = async (newChannelName: string) => {
-    // the client needs to be of type Audience to change channels..
-    await rtcEngine.current
-      ?.setClientRole(ClientRole.Audience)
-      .then(() => {
-        setMuted(true);
-        setClientRole(ClientRole.Audience);
-      })
-      .catch((error) => {
-        console.log("setClientRole: ", error);
-      });
-    await rtcEngine.current
-      ?.switchChannel(token, newChannelName)
-      .catch((error) => console.log(error));
   };
 
-  const leaveChannel = useCallback(async () => {
+  const leaveChannel = async () => {
     await rtcEngine.current
       ?.leaveChannel()
       .catch((error) => console.log("leaveChannel: ", error));
 
+    // Clear up the state
     setPeerIds([]);
+    setMuted(true);
     setJoinSucceed(false);
+  };
 
-    // set the state back to normal
-    setClientRole(ClientRole.Broadcaster);
-  }, []);
+  const changeChannel = async (newChannelName: string) => {
+    try {
+      await leaveChannel();
+      await joinChannel(newChannelName);
+    } catch (error) {
+      setError(true);
+      setLoading(false);
+      console.log("changeChannel: ", error);
+    }
+  };
 
-  const toggleIsSpeakerEnabled = useCallback(async () => {
+  // TOGGLES
+  const toggleMute = async () => {
+    console.log("toggle");
+    await rtcEngine.current?.muteLocalAudioStream(!muted).then(() => {
+      setMuted(!muted);
+    });
+  };
+
+  const toggleIsSpeakerEnabled = async () => {
     await rtcEngine.current
       ?.setEnableSpeakerphone(!isSpeakerEnabled)
       .catch((error) => console.log("toggleIsSpeakerEnabled: ", error));
     setIsSpeakerEnabled(!isSpeakerEnabled);
-  }, []);
+  };
 
   return {
     joinChannel,
@@ -158,8 +141,10 @@ const useAgora = () => {
     peerIds,
     changeChannel,
     error,
-    switchRole,
+    toggleMute,
     muted,
+    loading,
+    setLoading,
   };
 };
 
