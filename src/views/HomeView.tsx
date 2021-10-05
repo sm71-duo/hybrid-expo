@@ -115,7 +115,7 @@ const HomeView = () => {
           onPressIn={activateButton}
           onPressOut={activateButton}
           isActive={!muted}
-          disabled={joinSucceed}
+          disabled={!joinSucceed}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>

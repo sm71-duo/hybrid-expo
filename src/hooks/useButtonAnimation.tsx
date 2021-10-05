@@ -11,7 +11,7 @@ export const useButtonAnimation = () => {
   const getAnimatedButton = () => {
     return animatedButton;
   };
-  const animatedButton = useRef(new Animated.Value(0.6)).current;
+  const animatedButton = useRef(new Animated.Value(0)).current;
 
   const onAnimatedPress = () => {
     Animated.timing(animatedButton, {
