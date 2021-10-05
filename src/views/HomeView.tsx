@@ -4,6 +4,10 @@ import { spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
 import DisplayScreen from "../components/DisplayScreen";
+import { Animated, Pressable } from "react-native";
+import { useButtonAnimation } from "../hooks/useButtonAnimation";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const FmChannels = [
   { id: 1, name: "channel-1", fm: "100.0" },
@@ -12,6 +16,8 @@ const FmChannels = [
 ];
 
 const HomeView = () => {
+  const buttonAnimation = useButtonAnimation();
+
   const {
     leaveChannel,
     joinChannel,
@@ -60,6 +66,14 @@ const HomeView = () => {
     joinChannel("channel-x");
   };
 
+  const activateButton = () => {
+    toggleMute();
+    Animated.timing(buttonAnimation.animatedButton, {
+      ...buttonAnimation.animationSettings,
+      toValue: muted ? 1 : 0,
+    }).start();
+  };
+
   return (
     <Wrapper>
       <TopWrapper>
@@ -93,10 +107,15 @@ const HomeView = () => {
       </TopWrapper>
       <BottomWrapper>
         <PushToTalkButton
-          onPressIn={toggleMute}
-          onPressOut={toggleMute}
+          style={[
+            {
+              backgroundColor: buttonAnimation.animatedButtonColor,
+            },
+          ]}
+          onPressIn={activateButton}
+          onPressOut={activateButton}
           isActive={!muted}
-          disabled={!joinSucceed}
+          disabled={joinSucceed}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
@@ -167,7 +186,7 @@ const TopWrapper = styled.View`
   background-color: #595959;
 `;
 
-const PushToTalkButton = styled.Pressable.attrs({
+const PushToTalkButton = styled(AnimatedPressable).attrs({
   shadowColor: "#000",
   shadowOffset: {
     width: 0,
