@@ -38,7 +38,15 @@ const HomeView = () => {
   const [channel, setChannel] = useState<any>(FmChannels[0]);
   const [isTurnedOn, setIsTurnedOn] = useState<boolean>(false);
 
-  useEffect(() => {}, [talking]);
+  useEffect(() => {
+    console.log(talking);
+    if (muted) {
+      Animated.timing(buttonAnimation.animatedButtonOpacity, {
+        ...buttonAnimation.animationSettings,
+        toValue: talking ? 1 : 0,
+      }).start();
+    }
+  }, [talking]);
 
   const channelUp = () => {
     setLoading(true);
@@ -115,6 +123,7 @@ const HomeView = () => {
           style={[
             {
               backgroundColor: buttonAnimation.animatedButtonColorInterpolate,
+              opacity: buttonAnimation.animatedButtonOpacityInterpolate,
             },
           ]}
           onPressIn={activateButton}
