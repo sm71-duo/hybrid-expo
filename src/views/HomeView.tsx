@@ -119,7 +119,7 @@ const HomeView = () => {
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <FakeShadows isTalking={!talking}>
+        <FakeShadows isTalking={talking && muted}>
           <PushToTalkButton
             style={[
               {
