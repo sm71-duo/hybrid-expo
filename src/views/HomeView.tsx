@@ -4,6 +4,7 @@ import { spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
 import { useRequestAudio } from "../hooks/useRequestAudio";
 import DisplayScreen from "../components/DisplayScreen";
+import { useWebsocket } from "../hooks/useWebsockets";
 
 const FmChannels = [
   { id: 1, name: "channel-1", fm: "100.0" },
@@ -12,6 +13,7 @@ const FmChannels = [
 ];
 
 const HomeView = () => {
+  const { talking, websocketId, socket } = useWebsocket();
   const {
     leaveChannel,
     joinChannel,
@@ -23,7 +25,9 @@ const HomeView = () => {
     error,
     loading,
     setLoading,
-  } = useAgora();
+  } = useAgora(socket);
+
+  // Request audio
   useRequestAudio();
 
   const [channel, setChannel] = useState<any>(FmChannels[0]);
@@ -95,7 +99,7 @@ const HomeView = () => {
         <PushToTalkButton
           onPress={toggleMute}
           isActive={!muted}
-          disabled={!joinSucceed}
+          disabled={!joinSucceed || (talking && !(websocketId === socket.id))}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>
