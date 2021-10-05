@@ -13,12 +13,13 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 const FmChannels = [
   { id: 1, name: "channel-1", fm: "100.0" },
   { id: 2, name: "channel-2", fm: "101.0" },
-  { id: 3, name: "channel-0", fm: "99.0" },
+  { id: 3, name: "channel-3", fm: "102.0" },
 ];
 
 const HomeView = () => {
   const buttonAnimation = useButtonAnimation();
-  const { talking, websocketId, socket } = useWebsocket();
+  const { talking, websocketId, socket, currentChannel, joinRoom, leaveRoom } =
+    useWebsocket();
   const {
     leaveChannel,
     joinChannel,
@@ -35,7 +36,7 @@ const HomeView = () => {
   // Request audio
   useRequestAudio();
 
-  const [channel, setChannel] = useState<any>(FmChannels[0]);
+  const [channel, setChannel] = useState<any>(FmChannels[1]);
   const [isTurnedOn, setIsTurnedOn] = useState<boolean>(false);
 
   useEffect(() => {
@@ -50,37 +51,47 @@ const HomeView = () => {
 
   const channelUp = () => {
     setLoading(true);
-    const channelsCount = FmChannels.length;
-    if (channel.id === channelsCount) {
+    const oldChannelName = channel.name;
+    if (channel.id === FmChannels.length) {
       setChannel(FmChannels[0]);
-      changeChannel(channel.name);
+      changeChannel(oldChannelName, FmChannels[0].name);
       return;
     }
     setChannel(FmChannels[channel.id]);
-    changeChannel(channel.name);
+    changeChannel(oldChannelName, FmChannels[channel.id].name);
   };
 
   const channelDown = () => {
     setLoading(true);
-    const channelsCount = FmChannels.length;
+    const oldChannelName = channel.name;
     if (channel.id === 1) {
-      setChannel(FmChannels[channelsCount - 1]);
-      changeChannel(channel.name);
+      setChannel(FmChannels[FmChannels.length - 1]);
+      changeChannel(oldChannelName, FmChannels[FmChannels.length - 1].name);
       return;
     }
     setChannel(FmChannels[channel.id - 2]);
-    changeChannel(channel.name);
+    changeChannel(oldChannelName, FmChannels[channel.id - 2].name);
   };
 
-  const toggleWalkie = () => {
+  const toggleWalkie = async () => {
     setIsTurnedOn(!isTurnedOn);
-    if (joinSucceed) return leaveChannel();
+    if (joinSucceed) {
+      leaveChannel();
+      leaveRoom(channel.name);
+      return;
+    }
     setLoading(true);
-    joinChannel("channel-x");
+    await joinRoom(channel.name)
+      .then(() => {
+        joinChannel(channel.name);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const activateButton = () => {
-    toggleMute();
+    toggleMute(channel.name);
     Animated.timing(buttonAnimation.animatedButtonColor, {
       ...buttonAnimation.animationSettings,
       toValue: muted ? 1 : 0,
@@ -130,7 +141,12 @@ const HomeView = () => {
             onPressIn={activateButton}
             onPressOut={activateButton}
             isActive={!muted}
-            disabled={!joinSucceed || (talking && !(websocketId === socket.id))}
+            disabled={
+              !joinSucceed ||
+              (talking &&
+                !(websocketId === socket.id) &&
+                channel !== currentChannel)
+            }
           >
             <TalkText>Talk</TalkText>
           </PushToTalkButton>

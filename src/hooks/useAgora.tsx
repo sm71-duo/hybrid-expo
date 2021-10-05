@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import RtcEngine, { ChannelProfile, ClientRole } from "react-native-agora";
 import { Config } from "react-native-config";
 import { Socket } from "socket.io-client";
+import { useWebsocket } from "./useWebsockets";
 
 const useAgora = (socket: Socket) => {
   const [appId] = useState<string>(Config.AGORA_APP_ID);
@@ -16,6 +17,8 @@ const useAgora = (socket: Socket) => {
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const rtcEngine = useRef<RtcEngine>();
+
+  const { joinRoom, leaveRoom, changeRoom } = useWebsocket();
 
   useEffect(() => {
     initAgora();
@@ -100,30 +103,34 @@ const useAgora = (socket: Socket) => {
     await rtcEngine.current
       ?.leaveChannel()
       .catch((error) => console.log("leaveChannel: ", error));
-
     // Clear up the state
     setPeerIds([]);
     setMuted(true);
     setJoinSucceed(false);
   };
 
-  const changeChannel = async (newChannelName: string) => {
-    try {
-      await leaveChannel();
-      await joinChannel(newChannelName);
-    } catch (error) {
+  const changeChannel = async (
+    oldChannelName: string,
+    newChannelName: string
+  ) => {
+    Promise.all([
+      leaveChannel(),
+      joinChannel(newChannelName),
+      changeRoom(oldChannelName, newChannelName),
+    ]).catch((err) => {
       setError(true);
       setLoading(false);
       console.log("changeChannel: ", error);
-    }
+    });
   };
 
   // TOGGLES
-  const toggleMute = async () => {
+  const toggleMute = async (channel: string) => {
     console.log("toggle");
     await rtcEngine.current?.muteLocalAudioStream(!muted).then(() => {
       setMuted(!muted);
       socket.emit("user_talking", {
+        channel: channel,
         talking: muted,
       });
     });

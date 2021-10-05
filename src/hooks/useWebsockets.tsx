@@ -1,12 +1,27 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import io from "socket.io-client";
+import io, { Socket } from "socket.io-client";
 import { Config } from "react-native-config";
 
 const socket = io(Config.WEBSOCKET_URL);
-export const socketContext = createContext({
+
+export type SocketProps = {
+  talking: boolean;
+  websocketId: string;
+  socket: typeof socket;
+  currentChannel: string;
+  joinRoom: (channel: string) => Promise<void>;
+  leaveRoom: (channel: string) => Promise<void>;
+  changeRoom: (oldChannel: string, newChannel: string) => Promise<void>;
+};
+
+export const socketContext = createContext<SocketProps>({
   talking: false,
   websocketId: "",
   socket: socket,
+  currentChannel: "",
+  joinRoom: async () => undefined,
+  leaveRoom: async () => undefined,
+  changeRoom: async () => undefined,
 });
 
 export const useWebsocket = () => {
@@ -15,6 +30,7 @@ export const useWebsocket = () => {
 
 const useWebsockets = () => {
   const [talking, setTalking] = useState<boolean>(false);
+  const [currentChannel, setCurrentChannel] = useState<string>("");
   const [websocketId, setWebsocketId] = useState<string>("");
 
   useEffect(() => {
@@ -28,6 +44,7 @@ const useWebsockets = () => {
 
     socket.on("talking", (payload) => {
       setTalking(payload.talking);
+      setCurrentChannel(payload.channel);
       setWebsocketId(payload.socketId);
     });
 
@@ -36,10 +53,28 @@ const useWebsockets = () => {
     };
   }, [socket]);
 
+  const joinRoom = async (channel: string) => {
+    await socket.emit("join_room", channel);
+  };
+
+  const leaveRoom = async (channel: string) => {
+    await socket.emit("leave_room", channel);
+  };
+
+  const changeRoom = async (oldChannel: string, newChannel: string) => {
+    Promise.all([leaveRoom(oldChannel), joinRoom(newChannel)]).catch((err) => {
+      console.log(err);
+    });
+  };
+
   return {
     talking,
     websocketId,
     socket,
+    currentChannel,
+    joinRoom,
+    leaveRoom,
+    changeRoom,
   };
 };
 
