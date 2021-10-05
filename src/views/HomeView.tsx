@@ -6,6 +6,7 @@ import { useRequestAudio } from "../hooks/useRequestAudio";
 import DisplayScreen from "../components/DisplayScreen";
 import { Animated, Pressable } from "react-native";
 import { useButtonAnimation } from "../hooks/useButtonAnimation";
+import { useWebsocket } from "../hooks/useWebsockets";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -17,7 +18,7 @@ const FmChannels = [
 
 const HomeView = () => {
   const buttonAnimation = useButtonAnimation();
-
+  const { talking, websocketId, socket } = useWebsocket();
   const {
     leaveChannel,
     joinChannel,
@@ -29,7 +30,9 @@ const HomeView = () => {
     error,
     loading,
     setLoading,
-  } = useAgora();
+  } = useAgora(socket);
+
+  // Request audio
   useRequestAudio();
 
   const [channel, setChannel] = useState<any>(FmChannels[0]);
@@ -115,7 +118,7 @@ const HomeView = () => {
           onPressIn={activateButton}
           onPressOut={activateButton}
           isActive={!muted}
-          disabled={!joinSucceed}
+          disabled={!joinSucceed || (talking && !(websocketId === socket.id))}
         >
           <TalkText>Talk</TalkText>
         </PushToTalkButton>

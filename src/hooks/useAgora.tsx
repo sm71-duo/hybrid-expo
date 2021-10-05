@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import RtcEngine, { ChannelProfile, ClientRole } from "react-native-agora";
 import { Config } from "react-native-config";
+import { Socket } from "socket.io-client";
 
-const useAgora = () => {
+const useAgora = (socket: Socket) => {
   const [appId] = useState<string>(Config.AGORA_APP_ID);
   const [token, setToken] = useState<string>();
   const [rtcUid, setRtcUid] = useState<number>(
@@ -122,20 +123,15 @@ const useAgora = () => {
     console.log("toggle");
     await rtcEngine.current?.muteLocalAudioStream(!muted).then(() => {
       setMuted(!muted);
+      socket.emit("user_talking", {
+        talking: muted,
+      });
     });
-  };
-
-  const toggleIsSpeakerEnabled = async () => {
-    await rtcEngine.current
-      ?.setEnableSpeakerphone(!isSpeakerEnabled)
-      .catch((error) => console.log("toggleIsSpeakerEnabled: ", error));
-    setIsSpeakerEnabled(!isSpeakerEnabled);
   };
 
   return {
     joinChannel,
     leaveChannel,
-    toggleIsSpeakerEnabled,
     joinSucceed,
     isSpeakerEnabled,
     peerIds,
