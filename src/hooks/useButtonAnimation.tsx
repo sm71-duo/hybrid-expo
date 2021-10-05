@@ -9,27 +9,27 @@ export const useButtonAnimation = () => {
   };
 
   const getAnimatedButton = () => {
-    return animatedButton;
+    return animatedButtonColor;
   };
-  const animatedButton = useRef(new Animated.Value(0)).current;
+  const animatedButtonColor = useRef(new Animated.Value(0)).current;
 
   const onAnimatedPress = () => {
-    Animated.timing(animatedButton, {
+    Animated.timing(animatedButtonColor, {
       ...animationSettings,
       toValue: 1,
     }).start();
   };
 
-  const animatedButtonColor = animatedButton.interpolate({
+  const animatedButtonColorInterpolate = animatedButtonColor.interpolate({
     inputRange: [0, 1],
     outputRange: ["#4e4e4e", "#ff0000"],
   });
 
   return {
     onAnimatedPress,
-    animatedButton,
+    animatedButtonColor,
     animationSettings,
     getAnimatedButton,
-    animatedButtonColor,
+    animatedButtonColorInterpolate,
   };
 };

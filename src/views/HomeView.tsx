@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components/native";
 import { spacing, variables } from "../styles/styling";
 import useAgora from "../hooks/useAgora";
@@ -38,6 +38,8 @@ const HomeView = () => {
   const [channel, setChannel] = useState<any>(FmChannels[0]);
   const [isTurnedOn, setIsTurnedOn] = useState<boolean>(false);
 
+  useEffect(() => {}, [talking]);
+
   const channelUp = () => {
     setLoading(true);
     const channelsCount = FmChannels.length;
@@ -71,7 +73,7 @@ const HomeView = () => {
 
   const activateButton = () => {
     toggleMute();
-    Animated.timing(buttonAnimation.animatedButton, {
+    Animated.timing(buttonAnimation.animatedButtonColor, {
       ...buttonAnimation.animationSettings,
       toValue: muted ? 1 : 0,
     }).start();
@@ -112,7 +114,7 @@ const HomeView = () => {
         <PushToTalkButton
           style={[
             {
-              backgroundColor: buttonAnimation.animatedButtonColor,
+              backgroundColor: buttonAnimation.animatedButtonColorInterpolate,
             },
           ]}
           onPressIn={activateButton}
