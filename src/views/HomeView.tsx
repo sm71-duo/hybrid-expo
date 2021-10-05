@@ -119,20 +119,22 @@ const HomeView = () => {
         </TopButtonsWrapper>
       </TopWrapper>
       <BottomWrapper>
-        <PushToTalkButton
-          style={[
-            {
-              backgroundColor: buttonAnimation.animatedButtonColorInterpolate,
-              opacity: buttonAnimation.animatedButtonOpacityInterpolate,
-            },
-          ]}
-          onPressIn={activateButton}
-          onPressOut={activateButton}
-          isActive={!muted}
-          disabled={!joinSucceed || (talking && !(websocketId === socket.id))}
-        >
-          <TalkText>Talk</TalkText>
-        </PushToTalkButton>
+        <FakeShadows isTalking={!talking}>
+          <PushToTalkButton
+            style={[
+              {
+                backgroundColor: buttonAnimation.animatedButtonColorInterpolate,
+                opacity: buttonAnimation.animatedButtonOpacityInterpolate,
+              },
+            ]}
+            onPressIn={activateButton}
+            onPressOut={activateButton}
+            isActive={!muted}
+            disabled={!joinSucceed || (talking && !(websocketId === socket.id))}
+          >
+            <TalkText>Talk</TalkText>
+          </PushToTalkButton>
+        </FakeShadows>
       </BottomWrapper>
       <OnOffBottom onPress={toggleWalkie} isActive={isTurnedOn} hitSlop={20}>
         <XButton>{isTurnedOn ? "off" : "on"}</XButton>
@@ -200,8 +202,18 @@ const TopWrapper = styled.View`
   background-color: #595959;
 `;
 
-const PushToTalkButton = styled(AnimatedPressable).attrs({
-  shadowColor: "#000",
+const PushToTalkButton = styled(AnimatedPressable)`
+  border-radius: ${variables.borderRadius.round}px;
+  width: 75px;
+  height: 75px;
+  background-color: ${(props: { isActive: boolean }) =>
+    props.isActive ? "#ff0000" : "#4e4e4e"};
+  justify-content: center;
+  align-items: center;
+`;
+
+const FakeShadows = styled.View.attrs({
+  shadowColor: "#ff0000",
   shadowOffset: {
     width: 0,
     height: 4,
@@ -212,10 +224,10 @@ const PushToTalkButton = styled(AnimatedPressable).attrs({
   elevation: 8,
 })`
   border-radius: ${variables.borderRadius.round}px;
-  width: 75px;
-  height: 75px;
-  background-color: ${(props: { isActive: boolean }) =>
-    props.isActive ? "#ff0000" : "#4e4e4e"};
+  width: 78px;
+  height: 78px;
+  background-color: ${(props: { isTalking: boolean }) =>
+    props.isTalking ? "#77020220" : "#4e4e4e00"};
   justify-content: center;
   align-items: center;
   margin-top: -45px;
