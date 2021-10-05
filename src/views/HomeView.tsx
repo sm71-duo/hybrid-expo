@@ -93,7 +93,8 @@ const HomeView = () => {
       </TopWrapper>
       <BottomWrapper>
         <PushToTalkButton
-          onPress={toggleMute}
+          onPressIn={toggleMute}
+          onPressOut={toggleMute}
           isActive={!muted}
           disabled={!joinSucceed}
         >
