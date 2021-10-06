@@ -201,17 +201,21 @@ const OnOffBottom = styled.Pressable`
   bottom: 0;
   right: 0;
   margin: ${spacing.s6}px;
-  height: 48px;
-  width: 48px;
+  padding: ${spacing.s1}px;
+  height: 52px;
+  width: 80px;
   justify-content: center;
   align-items: center;
   border-radius: ${variables.borderRadius.round}px;
 `;
 
 const XButton = styled.Text`
-color: white
-font-size: 18px
-font-weight: bold`;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 2px;
+  border: solid #00000000 1px;
+`;
 
 const TopWrapper = styled.View`
   padding: ${spacing.s4}px;
