@@ -43,6 +43,7 @@ const useWebsockets = () => {
     });
 
     socket.on("talking", (payload) => {
+      console.log(payload);
       setTalking(payload.talking);
       setCurrentChannel(payload.channel);
       setWebsocketId(payload.socketId);

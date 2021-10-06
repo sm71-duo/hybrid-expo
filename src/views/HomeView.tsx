@@ -76,8 +76,8 @@ const HomeView = () => {
   const toggleWalkie = async () => {
     setIsTurnedOn(!isTurnedOn);
     if (joinSucceed) {
-      leaveChannel();
-      leaveRoom(channel.name);
+      await leaveChannel();
+      await leaveRoom(channel.name);
       return;
     }
     setLoading(true);
